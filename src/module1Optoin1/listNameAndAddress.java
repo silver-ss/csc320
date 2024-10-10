@@ -1,7 +1,5 @@
 package module1Optoin1;
 
-import java.util.Scanner;
-
 public class listNameAndAddress {
 	
 	public static void main(String[] args) {
