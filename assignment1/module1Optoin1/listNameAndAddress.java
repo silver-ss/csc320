@@ -1,7 +1,7 @@
-package module1Optoin1;
+package module1Option1;
 
-public class listNameAndAddress {
-	
+public class ListNameAndAddress {
+
 	public static void main(String[] args) {
 		// Declare the 5 variables
 		String firstName;
@@ -18,13 +18,12 @@ public class listNameAndAddress {
 		zipCode = 12345;
 				
 		// Print out a table of the readable names of each variable and the values associated
-		System.out.println("Field		|Value");
-		System.out.println("----------------------");
-		System.out.println("First Name:	|" + firstName);
-		System.out.println("Last Name: 	|" + lastName);
-		System.out.println("Address: 	|" + streetAddress);
-		System.out.println("City: 		|" + city);
-		System.out.println("Zip Code: 	|" + firstName);
+		System.out.printf("%-12s|%-20s|\n", "Field", "Value");
+		System.out.println("------------|--------------------|");
+		System.out.printf("%-12s|%-20s|\n", "First Name", firstName);
+		System.out.printf("%-12s|%-20s|\n", "Last Name", lastName);
+		System.out.printf("%-12s|%-20s|\n", "Address", streetAddress);
+		System.out.printf("%-12s|%-20s|\n", "City", city);
+		System.out.printf("%-12s|%-20s|\n", "Zip Code", zipCode);
 	}
-
 }
