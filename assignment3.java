@@ -2,70 +2,88 @@ package groceryBill;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Scanner;
+import java.util.*;
 
-public class GroceryBill {
-	
-	public static void main(String[] args) {
-		Scanner scnr = new Scanner(System.in);
-		double couponAmount;
-		BigDecimal couponRate;
-		double week1Bill;
-		double week2Bill;
-		double week3Bill;
-		double week4Bill;
-		//using bigDecimal for precision when averaging. 
-		BigDecimal monthlyTotal;
-		BigDecimal weeks = BigDecimal.valueOf(4.0);
-		BigDecimal weeklyAverage;
+	public class GroceryBill {
+
+		public static void main(String[] args) {
+			Scanner scnr = new Scanner(System.in);
+			double [] bills = new double[4];
+			//using bigDecimal for precision when averaging.
+			BigDecimal couponRate;
+			BigDecimal monthlyTotal;
+			BigDecimal weeks = BigDecimal.valueOf(4.0);
+			BigDecimal weeklyAverage;
+			
+			//prompt user for a coupon rate
+			couponRate = getCouponRate(scnr);
+			
+			// prompt user for last 4 grocery bills
+			while (true) {
+				System.out.println("Enter your last 4 weekly grocery bills including cents seperated by a space\nEXAMPLE:");
+				System.out.println("100.25 50.08 122.22 64.88");
+				boolean valid = true;
+				for (int i = 0; i < bills.length; ++i) {
+					try {
+						bills[i] = scnr.nextDouble();
+					} catch (InputMismatchException e ) {
+						System.out.println("Invalid input. Please enter decimal numbers seperated by spaces only!");
+						valid = false; 
+						scnr.nextLine(); // clear scanner
+						break; // break from for loop and start over
+					}
+				}
+				if (valid) {
+					break;
+				}
+			}
+			scnr.close();
+			// sum monthly total 
+			monthlyTotal = sumTotal(bills);
+			// calculate weekly average
+			weeklyAverage = averageBills(monthlyTotal, weeks);
+			// print out the results
+			printResults(monthlyTotal, weeklyAverage, couponRate);			
+		}
 		
 		//prompt user for a coupon rate
-		System.out.println("Enter the coupon rate as a decimal like 0.10 for 10%:");
-		couponAmount = scnr.nextDouble();
-		
-		// if value exceeds 100% or is at or below 0% set to 10% else set to user entry
-		if (couponAmount > 1.0  || couponAmount <= 0.0) {
-			// store as 0.9 to multiply and get total after applying to total later
-			couponRate = new BigDecimal(1.0 - 0.1);
-			System.out.println("Invalid coupon rate of " + (couponAmount * 100.0) + "% entered, setting value to 10%");
+		public static BigDecimal getCouponRate(Scanner scnr) {
+			double couponAmount;
+			while (true) {
+				try {
+					System.out.println("Enter the coupon rate as a decimal like 0.10 for 10%:");
+					couponAmount = scnr.nextDouble();
+					if (couponAmount > 1.0  || couponAmount <= 0.0) { 
+						throw new InputMismatchException ();
+					}
+					break;
+				} 
+				catch (InputMismatchException e) {
+					System.out.println("ERROR: pelease provide a decimal number between 0.0 and 1.0" );
+					scnr.nextLine(); //clear scnr
+				}
+			}
+			return new BigDecimal(1.0 - couponAmount).setScale(4, RoundingMode.HALF_UP);
 		}
-		else {
-			//take the users input store it as 1 - the percentage of the coupon, round at the 4th decimal place, if 5 round up
-			couponRate = new BigDecimal(1.0 - couponAmount).setScale(4, RoundingMode.HALF_UP);
+		// sum the weekly bills
+		public static BigDecimal sumTotal(double [] weeklyBills) {
+			double sum =0;
+			for (double bill : weeklyBills) {
+				sum += bill;
+			}
+			return BigDecimal.valueOf(sum).setScale(2, RoundingMode.HALF_UP);
 		}
-		
-		//prompt user for last 4 grocery bills
-		System.out.println("Enter your last 4 weekly grocery bills including cents seperated by a space\nEXAMPLE:");
-		System.out.println("100.25 50.08 122.22 64.88");
-		week1Bill = scnr.nextDouble();
-		week2Bill = scnr.nextDouble();
-		week3Bill = scnr.nextDouble();
-		week4Bill = scnr.nextDouble();
-		
-		//sum monthly total rounded to the 2nd decimal since we are converting from float here
-		monthlyTotal = BigDecimal.valueOf(sumTotal(week1Bill, week2Bill, week3Bill, week4Bill)).setScale(2, RoundingMode.HALF_UP);
-		//calculate weekly average
-		weeklyAverage = averageBills(monthlyTotal, weeks);
-		
-		//output the totals and averages with and without coupon amount
-		System.out.println();
-		System.out.println("Without the coupon:");
-		System.out.println("Monthly total spending is:  $" + monthlyTotal);
-		System.out.println("Average weekly spending is: $" + weeklyAverage);
-		System.out.println();
-		System.out.println("With the coupon:");
-		System.out.println("Monthly total spending would have been:  $" 
-		+ (monthlyTotal.multiply(couponRate).setScale(2, RoundingMode.HALF_UP)));
-		System.out.println("Average weekly spending would have been: $" 
-		+ (weeklyAverage.multiply(couponRate).setScale(2, RoundingMode.HALF_UP)));
-		
+		// average the weekly bills
+		public static BigDecimal averageBills(BigDecimal monthlyTotal, BigDecimal weeks) {
+			return monthlyTotal.divide(weeks).setScale(2, RoundingMode.HALF_UP);
+		}
+		// output results for total average and coupon effect
+		public static void printResults(BigDecimal monthlyTotal, BigDecimal weeklyAverage, BigDecimal couponRate) {
+			BigDecimal couponTotal = monthlyTotal.multiply(couponRate).setScale(2, RoundingMode.HALF_UP);
+			BigDecimal couponWeekly = weeklyAverage.multiply(couponRate).setScale(2, RoundingMode.HALF_UP);
+			System.out.println("\nWithout the Coupon:\nMonthly Total Spending is: $" + monthlyTotal);
+			System.out.println("Average weekly spending is: $" + weeklyAverage);
+			System.out.println("\nWith the Coupon:\nMonthly Total Spending would have been: $" + couponTotal);
+			System.out.println("Average weekly spending is: $" + couponWeekly + "\n");
+		}
 	}
-	// sum the weekly bills
-	public static double sumTotal(double week1Bill, double week2Bill, double week3Bill, double week4Bill) {
-		return week1Bill + week2Bill + week3Bill + week4Bill;
-	}
-	// average the weekly bills
-	public static BigDecimal averageBills(BigDecimal monthlyTotal, BigDecimal weeks) {
-		return monthlyTotal.divide(weeks).setScale(2, RoundingMode.HALF_UP);
-	}
-}
