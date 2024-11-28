@@ -45,6 +45,7 @@ public class CriticalThinkingAssignmentOption1 {
 		}
 		System.out.println("The Maximum is: " + max);
 	}
+	// sum the user entries
 	private static float getTotal(float [] array) {
 		float total = 0.0f;
 		for (float num : array) {
@@ -53,10 +54,12 @@ public class CriticalThinkingAssignmentOption1 {
 		System.out.println("The Total is: " + total);
 		return total;
 	}
+	// find the average of all entries
 	private static void getAverage (float total, float count) {
 		float average = (total / count);
 		System.out.printf("The Average is: %.2f\n", average);
 	}
+	// calculate the interest at 20%
 	private static void getInterest(float interestRate, float total) {
 		float interest = total * interestRate;
 		System.out.printf("The Interest at %.1f%% is %.2f\n", (interestRate * 100), interest);
